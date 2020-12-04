@@ -45,6 +45,9 @@ jobs:
     - name: Run Server-side tests
       run: |
         pytest -vv --cov notebook --cov-branch --cov-report term-missing:skip-covered --ignore-glob=notebook/tests/selenium/*
+    - name: Run Integration Tests
+      run: |
+        pytest -v notebook/tests/test_notebookapp_integration.py --integration_tests
     - name: Coverage
       run: |
         codecov
