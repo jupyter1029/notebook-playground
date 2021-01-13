@@ -89,7 +89,7 @@ class APITest(NotebookTestBase):
 
     @pytest.mark.skipif(
         not cmd_exists('pandoc'),
-        msg="Pandoc wasn't found. Skipping this test."
+        reason="Pandoc wasn't found. Skipping this test."
     )
     def test_from_file(self):
         r = self.nbconvert_api.from_file('html', 'foo', 'testnb.ipynb')
@@ -104,7 +104,7 @@ class APITest(NotebookTestBase):
 
     @pytest.mark.skipif(
         not cmd_exists('pandoc'),
-        msg="Pandoc wasn't found. Skipping this test."
+        reason="Pandoc wasn't found. Skipping this test."
     )
     def test_from_file_404(self):
         with assert_http_error(404):
@@ -112,7 +112,7 @@ class APITest(NotebookTestBase):
 
     @pytest.mark.skipif(
         not cmd_exists('pandoc'),
-        msg="Pandoc wasn't found. Skipping this test."
+        reason="Pandoc wasn't found. Skipping this test."
     )
     def test_from_file_download(self):
         r = self.nbconvert_api.from_file('python', 'foo', 'testnb.ipynb', download=True)
@@ -131,7 +131,7 @@ class APITest(NotebookTestBase):
 
     @pytest.mark.skipif(
         not cmd_exists('pandoc'),
-        msg="Pandoc wasn't found. Skipping this test."
+        reason="Pandoc wasn't found. Skipping this test."
     )
     def test_from_post(self):
         nbmodel = self.request('GET', 'api/contents/foo/testnb.ipynb').json()
@@ -148,7 +148,7 @@ class APITest(NotebookTestBase):
 
     @pytest.mark.skipif(
         not cmd_exists('pandoc'),
-        msg="Pandoc wasn't found. Skipping this test."
+        reason="Pandoc wasn't found. Skipping this test."
     )
     def test_from_post_zip(self):
         nbmodel = self.request('GET', 'api/contents/foo/testnb.ipynb').json()
