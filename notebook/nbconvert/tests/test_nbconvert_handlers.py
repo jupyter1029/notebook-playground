@@ -122,7 +122,7 @@ class APITest(NotebookTestBase):
 
     @pytest.mark.skipif(
         not cmd_exists('pandoc'),
-        msg="Pandoc wasn't found. Skipping this test."
+        reason="Pandoc wasn't found. Skipping this test."
     )
     def test_from_file_zip(self):
         r = self.nbconvert_api.from_file('latex', 'foo', 'testnb.ipynb', download=True)
