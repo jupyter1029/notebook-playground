@@ -42,6 +42,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.python-version }}-
           ${{ runner.os }}-pip-
+    - name: Install the Python dependencies
+      run: |
+        pip install -e .[test]
     - name: Run NBConvert Tests
       run: |
         pytest notebook/nbconvert/tests/
