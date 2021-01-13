@@ -1,4 +1,10 @@
-name: Python Tests
+# The NBConvert Service requires pandoc. Instead of testing
+# Pandoc on every operating system (which should already be
+# done in nbconvert directly), we'll only test these services
+# on ubuntu where we can easily load Pandoc from a Github
+# Actions docker image (this docker image is not on other
+# operating systems).
+name: NBConvert Service Tests
 on:
   push:
     branches: '*'
@@ -6,11 +12,10 @@ on:
     branches: '*'
 jobs:
   build:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos, windows]
         python-version: [ '3.6' , '3.7', '3.8', '3.9' ]
     steps:
     - name: Checkout
@@ -38,19 +43,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.python-version }}-
           ${{ runner.os }}-pip-
-    - name: Install the Python dependencies
+    - name: Run NBConvert Tests
       run: |
-        pip install -e .[test] codecov
-    - name: List installed packages
+        pytest notebook/nbconvert/tests/
+    - name: Run NBConvert Service Tests
       run: |
-        pip freeze
-        pip check
-    - name: Run Server-side tests
-      run: |
-        pytest -vv --cov notebook --cov-branch --cov-report term-missing:skip-covered --ignore-glob=notebook/tests/selenium/* --ignore-glob=notebook/nbconvert/tests/* --ignore-glob=notebook/services/nbconvert/tests/*
-    - name: Run Integration Tests
-      run: |
-        pytest -v notebook/tests/test_notebookapp_integration.py --integration_tests
-    - name: Coverage
-      run: |
-        codecov
+        pytest notebook/services/nbconvert/tests/
