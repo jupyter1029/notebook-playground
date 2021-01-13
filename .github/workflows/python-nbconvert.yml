@@ -26,7 +26,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: 'x64'
     - name: Setup Pandoc
-      runs-on: ${{ matrix.os }}-latest
       uses: docker://pandoc/core:2.9
     - name: Upgrade packaging dependencies
       run: |
