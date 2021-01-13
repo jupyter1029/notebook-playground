@@ -1,4 +1,4 @@
-name: Python Tests
+name: Docs Tests
 on:
   push:
     branches: '*'
@@ -10,8 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos, windows]
-        python-version: [ '3.6' , '3.7', '3.8', '3.9' ]
+        os: [ubuntu]
+        python-version: [ '3.6' ]
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -20,8 +20,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: 'x64'
-    - name: Setup Pandoc
-      uses: docker://pandoc/core:2.9
     - name: Upgrade packaging dependencies
       run: |
         pip install --upgrade pip setuptools wheel
@@ -40,16 +38,15 @@ jobs:
     - name: Install the Python dependencies
       run: |
         pip install -e .[test] codecov
+        pip install -r docs/doc-requirements.txt
+        wget https://github.com/jgm/pandoc/releases/download/1.19.1/pandoc-1.19.1-1-amd64.deb && sudo dpkg -i pandoc-1.19.1-1-amd64.deb
     - name: List installed packages
       run: |
         pip freeze
         pip check
-    - name: Run Server-side tests
+    - name: Run tests on documentation
       run: |
-        pytest -vv --cov notebook --cov-branch --cov-report term-missing:skip-covered --ignore-glob=notebook/tests/selenium/*
-    - name: Run Integration Tests
-      run: |
-        pytest -v notebook/tests/test_notebookapp_integration.py --integration_tests
-    - name: Coverage
-      run: |
-        codecov
+        EXIT_STATUS=0
+        make -C docs/ html || EXIT_STATUS=$?
+        pytest --nbval --current-env docs || EXIT_STATUS=$?
+        exit $EXIT_STATUS
