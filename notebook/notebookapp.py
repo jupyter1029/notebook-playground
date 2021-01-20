@@ -121,6 +121,7 @@ from .utils import (
     urlencode_unix_socket_path,
     urljoin,
 )
+from .traittypes import TypeFromClasses
 
 # Check if we can use async kernel management
 try:
@@ -1379,9 +1380,17 @@ class NotebookApp(JupyterApp):
         (shutdown the notebook server)."""
     )
 
-    contents_manager_class = Type(
+    contents_manager_class = TypeFromClasses(
         default_value=LargeFileManager,
-        klass=ContentsManager,
+        klasses=[
+            ContentsManager,
+            # To make custom ContentsManagers both forward+backward
+            # compatible, we'll relax the strictness of this trait
+            # and allow jupyter_server contents managers to pass
+            # through. If jupyter_server is not installed, this class
+            # will be ignored.
+            'jupyter_server.contents.services.managers.ContentsManager'
+        ]
         config=True,
         help=_('The notebook manager class to use.')
     )
