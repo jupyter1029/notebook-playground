@@ -1380,6 +1380,8 @@ class NotebookApp(JupyterApp):
         (shutdown the notebook server)."""
     )
 
+    # We relax this trait to handle Contents Managers using jupyter_server
+    # as the core backend.
     contents_manager_class = TypeFromClasses(
         default_value=LargeFileManager,
         klasses=[
@@ -1394,6 +1396,24 @@ class NotebookApp(JupyterApp):
         config=True,
         help=_('The notebook manager class to use.')
     )
+
+    # Throws a deprecation warning to jupyter_server based contents managers.
+    @observe('contents_manager_class')
+    def _observe_contents_manager_class(self, change):
+        new = change['new']
+        # If 'new' is a class, get a string representing the import
+        # module path.
+        if inspect.isclass(new):
+            new = new.__module__
+
+        if new.startswith('jupyter_server'):
+            self.log.warn(
+                "The specified 'contents_manager_class' class inherits a manager from the "
+                "'jupyter_server' package. These (future-looking) managers are not "
+                "guaranteed to work with the 'notebook' package. For longer term support "
+                "consider switching to NBClassic—a notebook frontend that leverages "
+                "Jupyter Server as its server backend."
+            )
 
     kernel_manager_class = Type(
         default_value=MappingKernelManager,
